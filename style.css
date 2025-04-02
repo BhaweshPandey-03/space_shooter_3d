@@ -1,0 +1,207 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden; /* Prevent scrollbars */
+  width: 100%;
+  height: 100%;
+  background-color: #050510; /* Dark blue-ish background */
+  color: #eee; /* Light text color default */
+  font-family: 'Orbitron', sans-serif; /* Use a more retro/sci-fi font if available, fallback */
+}
+
+#game-container {
+  width: 100%;
+  height: 100%;
+  position: relative; /* Needed for absolute positioning */
+}
+
+#game-canvas {
+  display: block; /* Remove extra space below canvas */
+  width: 100%;
+  height: 100%;
+}
+
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #00ffcc; /* Cyan text color */
+    font-size: 28px; /* Larger font size */
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc; /* Glow effect */
+    background-color: rgba(10, 20, 40, 0.6); /* Darker semi-transparent background */
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 204, 0.5); /* Subtle border */
+    z-index: 10;
+    transition: background-color 0.3s ease; /* Smooth background transition */
+}
+
+#score {
+    display: inline-block; /* Needed for transform */
+    transition: transform 0.15s ease-out, color 0.15s ease-out; /* Smooth score animation */
+}
+
+/* Animation for score increase */
+.score-increase {
+    transform: scale(1.2);
+    color: #ffffff; /* Flash white */
+}
+
+/* Animation for score decrease */
+.score-decrease {
+    transform: scale(0.9);
+    color: #ff4444; /* Flash red */
+}
+
+/* Screen flash effect */
+#screen-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 50, 50, 0.5); /* Red flash */
+    opacity: 0;
+    z-index: 5; /* Below HUD, above canvas */
+    pointer-events: none; /* Don't block clicks */
+    transition: opacity 0.3s ease-out; /* Fade out effect */
+}
+
+#screen-flash.active {
+    opacity: 1;
+    transition: opacity 0.05s ease-in; /* Quick fade in */
+}
+
+/* Start Game Modal Styles */
+#start-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's on top */
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+#start-modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* Allow clicks through when hidden */
+}
+
+#start-modal-content {
+    background-color: rgba(10, 20, 50, 0.9); /* Dark blue modal background */
+    padding: 40px 60px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+}
+
+#start-modal-content h1 {
+    color: #00ffcc;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    text-shadow: 0 0 8px #00ffcc;
+}
+
+#start-modal-content p {
+    color: #cccccc;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+#start-button {
+    margin-top: 25px;
+    padding: 12px 25px;
+    font-size: 1.2em;
+    font-family: 'Orbitron', sans-serif;
+    color: #050510;
+    background-color: #00ffcc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+}
+
+#start-button:hover {
+    background-color: #ffffff;
+    transform: scale(1.05);
+}
+
+/* Enhanced Game Console HUD Styles */
+#game-console {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to bottom, rgba(15, 25, 45, 0.85), rgba(5, 10, 20, 0.95)); /* Gradient background */
+    color: #aaccff; /* Lighter blue text */
+    padding: 10px 25px; /* Increased padding */
+    display: flex;
+    justify-content: space-around; /* Space out sections */
+    align-items: center; /* Align items vertically */
+    font-size: 16px; /* Slightly larger base font */
+    border-top: 2px solid #00aaff; /* Brighter blue top border */
+    box-shadow: 0 -5px 15px rgba(0, 170, 255, 0.3); /* Inner glow effect */
+    z-index: 10;
+    font-family: 'Roboto Mono', monospace; /* Monospaced font for console */
+    min-height: 60px; /* Ensure minimum height */
+}
+
+.console-section {
+    text-align: center;
+    flex-grow: 1; /* Allow sections to grow */
+    padding: 0 15px; /* Add padding between sections */
+}
+
+.console-label {
+    font-size: 0.8em; /* Smaller label */
+    color: #66aaff; /* Dimmer blue for labels */
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.console-value {
+    font-size: 1.2em; /* Larger value */
+    color: #ffffff; /* White color for dynamic values */
+    font-weight: bold;
+    text-shadow: 0 0 3px #ffffff, 0 0 6px #00ddff; /* White/Cyan glow */
+    min-height: 1.2em; /* Prevent layout shift when empty */
+    line-height: 1.2em;
+}
+
+.console-separator {
+    width: 1px;
+    height: 40px; /* Adjust height as needed */
+    background-color: rgba(0, 170, 255, 0.4); /* Faded blue separator */
+    margin: 0 10px; /* Space around separator */
+}
+
+/* Specific section styling if needed */
+.console-keys .console-value {
+    font-size: 1.0em; /* Slightly smaller for key list */
+    text-shadow: 0 0 3px #aaffaa, 0 0 6px #00ff00; /* Green glow for keys */
+    color: #ccffcc; /* Light green */
+}
+
+.console-ammo .console-value {
+    text-shadow: 0 0 3px #ffccaa, 0 0 6px #ff8800; /* Orange glow for ammo */
+    color: #ffeecc; /* Light orange */
+}
+
+.console-enemies .console-value {
+    text-shadow: 0 0 3px #ffaaaa, 0 0 6px #ff0000; /* Red glow for enemies */
+    color: #ffcccc; /* Light red */
+}
